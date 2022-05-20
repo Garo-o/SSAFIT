@@ -10,6 +10,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result column="b.reg_date" property="regDate"/>
 		<result column="b.content" property="content"/>
 		<result column="b.view_cnt" property="viewCnt"/>
+		<result column="b.is_deleteNY" property="isDeleteNY"/>
 		
 		
 		<association property="user" javaType="userDTO">
@@ -34,7 +35,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="selectAll" parameterType="HashMap" resultMap="boardMap">
 		select b.id "b.id", b.title "b.title", b.content "b.content", b.view_cnt "b.view_cnt",
-				 p.id "p.id", p.name "p.name", 
+				 p.id "p.id", p.name "p.name", b.is_deleteNY,
 				 u.id "u.id", u.username "u.username", u.email "u.email",
 				date_format(b.reg_date, '%Y-%m-%d %H:%i:%s') "b.reg_date",
 				date_format(u.reg_date, '%Y-%m-%d %H:%i:%s') "u.reg_date"
@@ -45,7 +46,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             	inner join part p
 				on p.id = bp.part_id
 			where 
-				b.id > 0
+				b.is_deleteNY = 'N'
 			<choose>
 				<when test="mode == 1">
 					and u.username like concat('%',#{key},'%')
@@ -64,7 +65,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	
 	<select id="selectById" parameterType="int" resultMap="boardMap">
 		select b.id "b.id", b.title "b.title", b.content "b.content", b.view_cnt "b.view_cnt",
-				 p.id "p.id", p.name "p.name", 
+				 p.id "p.id", p.name "p.name", b.is_deleteNY,
 				 u.id "u.id", u.username "u.username", u.email "u.email",
 				 r.id "r.id", r.content "r.content", r.user_id "r.user_id", r.board_id "r.board_id", 
 				date_format(b.reg_date, '%Y-%m-%d %H:%i:%s') "b.reg_date",
@@ -79,13 +80,14 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 				inner join review r
 				on r.board_id = b.id
 			where b.id = #{id}
+			and b.is_deleteNY = 'N'
 	</select>
 	
 	<insert id="insert" parameterType="boardDTO">
 		insert
 			into board
 			values
-			(0,#{title}, #{content}, #{user.getUsername()}, #{0}, now())
+			(0,#{title}, #{content}, #{user.getUsername()}, #{0}, now(), 'N')
 	</insert>
 	
 	<update id="update" parameterType="boardDTO">
@@ -94,7 +96,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 			set
 			content = #{content},
 			title = #{title},
-			view_cnt = #{viewCnt}
+			view_cnt = #{viewCnt},
+			is_deleteNY = #{isDeleteNY}
 			where id = #{id}
 	</update>
 	
