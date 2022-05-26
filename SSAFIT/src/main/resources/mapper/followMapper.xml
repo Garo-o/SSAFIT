@@ -11,11 +11,12 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</resultMap>
 
 	<insert id="insert" parameterType="followDTO">
-		insert 
+			insert into follow values (#{fromUsername}, #{toEmail})
+		<!--insert 
 			into follow 
 		    values
 		    (#{fromUsername}, 
-				(select email from user where username = #{toEmail}))
+				(select email from user where username = #{toEmail}))-->
 				<!-- toEmail이라 적었지만 실제 들어오는건 toUsername임
 					그래서 들어오는 이름을 기준으로 먼저 이메일을 찾아서 인서트
 					아래 삭제도 마찬가지 -->
